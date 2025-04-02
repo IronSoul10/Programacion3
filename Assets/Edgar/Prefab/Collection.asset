@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0350ed3982add5a40a25b33d179a2dda, type: 3}
+  m_Name: Collection
+  m_EditorClassIdentifier: 
+  itemPrefab: {fileID: 2728717945594643306, guid: 766875322a1788846a5fdf9e6ca3e2ed, type: 3}
+  sprite: {fileID: 21300000, guid: c4d3a7d56b817c646bb313b93e3c0c4b, type: 3}
+  names: Coleccion
+  description: Abro Cosas
+  cantidad: 1
