@@ -196,7 +196,7 @@ public class PlayFabManager : MonoBehaviour
         StartCoroutine(ShowAvatar(avatarUrl, userProfilePicture));
     }
 
-    public void UpdateLeaderBoard(int value) // Actualiza la tabla de clasificación con la puntuación del jugador
+    public void UpdateLeaderBoard(int value) // Actualiza la tabla de clasificación con la puntuación del jugador // Se manda a llamar desde el script de la puntuación
     {
         var request = new UpdatePlayerStatisticsRequest()
         {
@@ -236,14 +236,14 @@ public class PlayFabManager : MonoBehaviour
 
     private void DisplayLeaderboard(GetLeaderboardResult result) // Muestra la tabla de clasificación en la consola
     {
-        foreach (Transform child in userLeadboardParent)
+        foreach (Transform child in userLeadboardParent) // Elimino todos los elementos de la tabla de clasificación antes de mostrar la nueva tabla de clasificación
         {
             Destroy(child.gameObject);
         }
 
         for (int i = 0; i < result.Leaderboard.Count; i++) // Recorre la lista de jugadores en la tabla de clasificación
         {
-            var score = result.Leaderboard[i];
+            var score = result.Leaderboard[i]; // Obtiene la puntuación del jugador en la posición i
             GameObject userLeadboardInstance = Instantiate(userLeadboardPrefab, userLeadboardParent); // Instancia el prefab de la tabla de clasificación
 
             // Ajusta la posición de cada instancia para que tenga separación vertical
@@ -258,8 +258,8 @@ public class PlayFabManager : MonoBehaviour
             Image avatarImage = thirdChild.GetComponent<Image>(); // Obtiene el componente Image del tercer hijo del prefab
             if (avatarImage != null)
             {
-                string avatarUrl = score.Profile.AvatarUrl;
-                Debug.Log("Descargando Avatar URL en leadBoard: " + avatarUrl + " para " + score.DisplayName); // Imprime la URL en la consola para depuración
+                string avatarUrl = score.Profile.AvatarUrl; 
+                Debug.Log("Descargando Avatar URL en leadBoard: " + avatarUrl + " para " + score.DisplayName);
                 StartCoroutine(ShowAvatar(avatarUrl, avatarImage));
             }
             else
