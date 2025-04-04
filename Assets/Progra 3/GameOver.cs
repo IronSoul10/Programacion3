@@ -1,19 +1,19 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
-using TMPro;
+using Weather;
 
 
 public class GameOver : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI reiniciarText;
     private PlayerMovement playerMovement;
     private Arma arma;
     private CameraController1 cameraController1;
     private Cronometro cronometro;
 
+  
     private void Start()
     {
-        reiniciarText.enabled = false;
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         arma = FindFirstObjectByType<Arma>();
         cameraController1 = FindFirstObjectByType<CameraController1>();
@@ -23,28 +23,22 @@ public class GameOver : MonoBehaviour
     {
         Reintentar();
     }
-
+   
     public void EncenderPlayer()
     {
         arma.enabled = true;
         playerMovement.enabled = true;
-        cameraController1.enabled = true; 
-        Time.timeScale = 1;
+        cameraController1.enabled = true;
     }
 
     public void Reintentar()
     {
-        if (cronometro.tiempoRestante <= 0)
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            reiniciarText.enabled = true;
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                EncenderPlayer();
-                cronometro.ReiniciarCronometro();
-            }
+            SceneManager.LoadScene("MenuPrincipal");
+            EncenderPlayer();
+            cronometro.ReiniciarCronometro();
+            
         }
-
     }
-
 }

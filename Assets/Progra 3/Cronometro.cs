@@ -1,17 +1,22 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class Cronometro : MonoBehaviour
 {
-    [SerializeField] private bool enMarcha;
+    [SerializeField] public bool enMarcha = false;
     [SerializeField] public float tiempoInicial = 60f; // Tiempo inicial en segundos
     [SerializeField] public TextMeshProUGUI cronometroTexto; // Referencia al componente de texto en el canvas
+    [SerializeField] private TextMeshProUGUI reiniciarText;
+    [SerializeField] private TextMeshProUGUI cronometroText;
+    [SerializeField] private TextMeshProUGUI contadorText;
     [SerializeField] private GameObject CanvasLeaderBoard;
     [HideInInspector] public float tiempoRestante;
 
     private PlayerMovement playerMovement;
     private Arma arma;
     private CameraController1 cameraController1;
+    private PlayFabManager playFabManager;
 
 
     void Start()
@@ -19,12 +24,13 @@ public class Cronometro : MonoBehaviour
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         arma = FindFirstObjectByType<Arma>();
         cameraController1 = FindFirstObjectByType<CameraController1>();
-        enMarcha = true;
         tiempoRestante = tiempoInicial;
         ActualizarCronometro(tiempoRestante);
+        playFabManager = FindFirstObjectByType<PlayFabManager>();
+        StartCoroutine(Espera());
     }
 
-    void Update()
+    private void Update()
     {
         CuentaAtras();
     }
@@ -39,14 +45,30 @@ public class Cronometro : MonoBehaviour
             {
                 tiempoRestante = 0;
                 enMarcha = false;
-                Time.timeScale = 0;
                 CanvasLeaderBoard.SetActive(true); //realizar cuando el tiempo llegue a cero
+                reiniciarText.enabled = true;
+                cronometroText.enabled = false;
+                contadorText.enabled = false;
+                StartCoroutine(Espera());
                 DesactivarPlayer();
 
             }
             ActualizarCronometro(tiempoRestante);
         }
+    }
 
+    IEnumerator Espera()
+    {
+        while (true)
+        {
+
+            if (tiempoRestante >= 0)
+            {
+                yield return new WaitForSeconds(2f);
+                playFabManager.RequestLeaderboard(); // llamar al leaderboard
+
+            }
+        }
     }
 
     public void ReiniciarCronometro()

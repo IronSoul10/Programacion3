@@ -129,7 +129,7 @@ namespace Weather
             {
                 case var color when data.actualTemp <= 8: //Si la temperatura es menor o igual a 8
                     {
-                        actualAdjustmentColor = new Color(224,224,246);
+                        actualAdjustmentColor = new Color(224, 224, 246);
                         Sun1();
                         return actualAdjustmentColor;
                     }

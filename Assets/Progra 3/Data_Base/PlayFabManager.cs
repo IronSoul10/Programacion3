@@ -11,10 +11,11 @@ using UnityEngine.UI;
 
 public class PlayFabManager : MonoBehaviour
 {
+
+    #region Variables
     [Header("PLAYFAB SETTINGS")]
     [SerializeField] private string titleID = "3020F";
-    [SerializeField]
-    private string secretKey = "ERSDCC7P8IQQGMYBWCB5OWT83UHCOIRTJT1YFIOAI8ABA3HNRR";
+    [SerializeField] private string secretKey = "ERSDCC7P8IQQGMYBWCB5OWT83UHCOIRTJT1YFIOAI8ABA3HNRR";
 
     [Header("Create Account Inputs")]
     [SerializeField] private TMP_InputField newUsernameInput;
@@ -30,7 +31,7 @@ public class PlayFabManager : MonoBehaviour
     [SerializeField] private Image userProfilePicture;
 
     [Header("Leaderboard")]
-    [SerializeField] private GameObject leaderboardPanel; // Panel del anvas de la tabla de clasificación
+    [SerializeField] private GameObject leaderboardPanel; // Panel del canvas de la tabla de clasificación
     [SerializeField] private GameObject userLeadboardPrefab; // Prefab de la tabla de clasificación
     [SerializeField] private Transform userLeadboardParent; // Padre de los elementos de la tabla de clasificación
 
@@ -42,8 +43,9 @@ public class PlayFabManager : MonoBehaviour
 
     private string userDisplayName;
 
-    private bool activateLeaderboardPanel = false;
-    private bool isLoggedIn = false; // Verifica si el usuario ha iniciado sesión
+    private Cronometro cronometro;
+
+    #endregion
 
     private void Start()
     {
@@ -54,12 +56,14 @@ public class PlayFabManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Pause();
         }
+        cronometro = FindFirstObjectByType<Cronometro>();
     }
     private void Update()
     {
-        OpenLeaderboardPanel();
         Resume();
     }
+
+    #region Pausar y reanudar
     void Pause()
     {
         Time.timeScale = 0;
@@ -68,27 +72,9 @@ public class PlayFabManager : MonoBehaviour
     {
         Time.timeScale = 1;
     }
-    private void OpenLeaderboardPanel()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            activateLeaderboardPanel = !activateLeaderboardPanel;
-            if (activateLeaderboardPanel)
-            {
-                if (isLoggedIn) 
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    leaderboardPanel.SetActive(true);
-                    RequestLeaderboard(); // Llama a RequestLeaderboard para obtener la tabla de clasificación
-                }
-            }
-            else
-            {
-                leaderboardPanel.SetActive(false);
-            }
-        }
-    }
+    #endregion
 
+    #region Crear cuenta
     public void RegisterUser() // Registra un nuevo usuario en PlayFab con el nombre de usuario y la contraseña
     {
         if (string.IsNullOrEmpty(newUsernameInput.text) || string.IsNullOrEmpty(setPasswordInput.text))
@@ -106,13 +92,15 @@ public class PlayFabManager : MonoBehaviour
         };
 
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSucces, PlayfabErrorMessage);
-    } 
+    }
 
     private void OnRegisterSucces(RegisterPlayFabUserResult result) // Se llama cuando el registro es exitoso
     {
         Debug.Log("USUARIO REGISTRADO CORRECTAMENTE");
     }
+    #endregion
 
+    #region Iniciar sesion  
     public void LogInUser() // Inicia sesión en PlayFab con el nombre de usuario y la contraseña
     {
         if (string.IsNullOrEmpty(usernameInput.text) || string.IsNullOrEmpty(passwordInput.text))
@@ -137,11 +125,11 @@ public class PlayFabManager : MonoBehaviour
         onLogin?.Invoke();
         GetPlayerProfile(); // Obtiene el perfil del jugador después de iniciar sesión
         Resume();
-        isLoggedIn = true; // Establece isLoggedIn en verdadero después de iniciar sesión
-        RequestLeaderboard(); // Llama a RequestLeaderboard para obtener la tabla de clasificación
-
+        cronometro.enabled = true; // Inicia la cuenta regresiva del cronómetro
     }
+    #endregion
 
+    #region Obtener datos del jugador
     public void GetPlayerProfile() // Obtiene el perfil del jugador después de iniciar sesión
     {
         var request = new GetPlayerProfileRequest()
@@ -195,7 +183,9 @@ public class PlayFabManager : MonoBehaviour
         Debug.Log("Descargando Avatar URL: " + avatarUrl + "Del Usuario:" + userDisplayName); // Imprime la URL en la consola para depuración
         StartCoroutine(ShowAvatar(avatarUrl, userProfilePicture));
     }
+    #endregion
 
+    #region Tabla de clasificacion
     public void UpdateLeaderBoard(int value) // Actualiza la tabla de clasificación con la puntuación del jugador // Se manda a llamar desde el script de la puntuación
     {
         var request = new UpdatePlayerStatisticsRequest()
@@ -211,12 +201,10 @@ public class PlayFabManager : MonoBehaviour
         };
         PlayFabClientAPI.UpdatePlayerStatistics(request, OnLeaderUpdateSuccess, PlayfabErrorMessage); // Llama a la función OnLeaderUpdateSuccess si la actualización es exitosa
     }
-
     private void OnLeaderUpdateSuccess(UpdatePlayerStatisticsResult result)
     {
         Debug.Log("Se actualizo el leaderboard correctamente");
     }
-
     public void RequestLeaderboard() // Obtiene la tabla de clasificación
     {
         var request = new GetLeaderboardRequest()
@@ -228,12 +216,11 @@ public class PlayFabManager : MonoBehaviour
             {
                 ShowDisplayName = true, // Incluye el nombre de usuario
                 ShowAvatarUrl = true // Include Avatar URL
-                
+
             }
         };
         PlayFabClientAPI.GetLeaderboard(request, DisplayLeaderboard, PlayfabErrorMessage); // Llama a la función DisplayLeaderboard si la solicitud es exitosa
     }
-
     private void DisplayLeaderboard(GetLeaderboardResult result) // Muestra la tabla de clasificación en la consola
     {
         foreach (Transform child in userLeadboardParent) // Elimino todos los elementos de la tabla de clasificación antes de mostrar la nueva tabla de clasificación
@@ -258,7 +245,7 @@ public class PlayFabManager : MonoBehaviour
             Image avatarImage = thirdChild.GetComponent<Image>(); // Obtiene el componente Image del tercer hijo del prefab
             if (avatarImage != null)
             {
-                string avatarUrl = score.Profile.AvatarUrl; 
+                string avatarUrl = score.Profile.AvatarUrl;
                 Debug.Log("Descargando Avatar URL en leadBoard: " + avatarUrl + " para " + score.DisplayName);
                 StartCoroutine(ShowAvatar(avatarUrl, avatarImage));
             }
@@ -270,9 +257,10 @@ public class PlayFabManager : MonoBehaviour
             Debug.Log(string.Format("Nombre: {0} | Highscore: {1}", score.DisplayName, score.StatValue));
         }
     }
+    #endregion
 
     private void PlayfabErrorMessage(PlayFabError error)
     {
-        Debug.LogWarning($"Error: {error.ErrorMessage}, Código: {error.HttpCode}, Detalles: {error.GenerateErrorReport()}");
+        Debug.LogWarning(error.ErrorMessage);
     }
 }
