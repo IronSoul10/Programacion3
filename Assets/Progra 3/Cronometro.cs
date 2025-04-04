@@ -49,7 +49,6 @@ public class Cronometro : MonoBehaviour
                 reiniciarText.enabled = true;
                 cronometroText.enabled = false;
                 contadorText.enabled = false;
-                StartCoroutine(Espera());
                 DesactivarPlayer();
 
             }
@@ -59,16 +58,14 @@ public class Cronometro : MonoBehaviour
 
     IEnumerator Espera()
     {
-        while (true)
+        if (tiempoRestante >= 0)
         {
+            yield return new WaitForSeconds(2f);
+            playFabManager.RequestLeaderboard(); // llamar al leaderboard
+            StopCoroutine(Espera());
 
-            if (tiempoRestante >= 0)
-            {
-                yield return new WaitForSeconds(2f);
-                playFabManager.RequestLeaderboard(); // llamar al leaderboard
-
-            }
         }
+
     }
 
     public void ReiniciarCronometro()

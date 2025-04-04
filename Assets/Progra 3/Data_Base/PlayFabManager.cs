@@ -57,6 +57,8 @@ public class PlayFabManager : MonoBehaviour
             Pause();
         }
         cronometro = FindFirstObjectByType<Cronometro>();
+        DontDestroyOnLoad(userProfilePicture.gameObject);
+
     }
     private void Update()
     {
@@ -162,9 +164,17 @@ public class PlayFabManager : MonoBehaviour
         {
             avatarTexture = ((DownloadHandlerTexture)webRequest.downloadHandler).texture;
             avatarSprite = Sprite.Create(avatarTexture, new Rect(0, 0, avatarTexture.width, avatarTexture.height), new Vector2(0.5f, 0.5f));
-            avatarImage.sprite = avatarSprite;
-            avatarImage.rectTransform.sizeDelta = new Vector2(avatarWidth, avatarHeight); // Establece el tamaño de la imagen a 100x100 píxeles
-            Debug.Log("Avatar obtenido correctamente de la API.");
+
+            if (avatarImage != null)
+            {
+                avatarImage.sprite = avatarSprite;
+                avatarImage.rectTransform.sizeDelta = new Vector2(avatarWidth, avatarHeight); // Establece el tamaño de la imagen a 100x100 píxeles
+                Debug.Log("Avatar obtenido correctamente de la API.");
+            }
+            else
+            {
+                Debug.LogWarning("El componente Image no está asignado.");
+            }
         }
         else
         {
