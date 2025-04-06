@@ -1,7 +1,5 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
-using Weather;
 
 
 public class GameOver : MonoBehaviour
