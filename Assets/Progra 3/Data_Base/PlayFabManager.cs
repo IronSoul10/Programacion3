@@ -128,6 +128,7 @@ public class PlayFabManager : MonoBehaviour
         GetPlayerProfile(); // Obtiene el perfil del jugador después de iniciar sesión
         Resume();
         cronometro.enabled = true; // Inicia la cuenta regresiva del cronómetro
+        Cursor.lockState = CursorLockMode.Locked; // Bloquea el cursor en el centro de la pantalla
     }
     #endregion
 

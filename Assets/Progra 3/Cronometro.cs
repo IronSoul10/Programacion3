@@ -27,7 +27,6 @@ public class Cronometro : MonoBehaviour
         tiempoRestante = tiempoInicial;
         ActualizarCronometro(tiempoRestante);
         playFabManager = FindFirstObjectByType<PlayFabManager>();
-        StartCoroutine(Espera());
     }
 
     private void Update()
@@ -43,11 +42,13 @@ public class Cronometro : MonoBehaviour
             Debug.Log("Cuenta atras");
             if (tiempoRestante <= 0)
             {
+                Cursor.lockState = CursorLockMode.None; // Desbloquear el cursor
                 tiempoRestante = 0;
                 enMarcha = false;
                 CanvasLeaderBoard.SetActive(true); //realizar cuando el tiempo llegue a cero
                 reiniciarText.enabled = true;
                 cronometroText.enabled = false;
+                StartCoroutine(Espera());
                 contadorText.enabled = false;
                 DesactivarPlayer();
 
@@ -58,13 +59,9 @@ public class Cronometro : MonoBehaviour
 
     IEnumerator Espera()
     {
-        if (tiempoRestante >= 0)
-        {
-            yield return new WaitForSeconds(2f);
-            playFabManager.RequestLeaderboard(); // llamar al leaderboard
-            StopCoroutine(Espera());
-
-        }
+        yield return new WaitForSeconds(2f);
+        playFabManager.RequestLeaderboard(); // llamar al leaderboard
+        StopCoroutine(Espera());
 
     }
 
