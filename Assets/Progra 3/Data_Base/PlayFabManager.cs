@@ -31,7 +31,6 @@ public class PlayFabManager : MonoBehaviour
     [SerializeField] private Image userProfilePicture;
 
     [Header("Leaderboard")]
-    [SerializeField] private GameObject leaderboardPanel; // Panel del canvas de la tabla de clasificación
     [SerializeField] private GameObject userLeadboardPrefab; // Prefab de la tabla de clasificación
     [SerializeField] private Transform userLeadboardParent; // Padre de los elementos de la tabla de clasificación
 
